@@ -10,7 +10,7 @@ chmod go-r .my.cnf
 **Задача 2** - Создайте базу данных example, разместите в ней таблицу users, состоящую из двух столбцов, числового id и строкового name.
 ```
 mysql
-CREATE DATABASE IF NOT EXIST example;
+CREATE DATABASE IF NOT EXISTS example;
 SHOW DATABASES;
 USE example;
 CREATE TABLE users (id SERIAL PRIMARY KEY,
