@@ -17,7 +17,7 @@ mysql vk < /Users/artur/Downloads/fulldb05-05-2020-12-01.sql
 
 ![image](dbeaver_vk_filled.png)
 
-4. Создаем дамп базы (приложен к отчету)
+4. Создаем дамп базы ([приложен к отчету](vk.sql))
 ```
 mysqldump vk > vk.sql
 ```
