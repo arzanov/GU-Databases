@@ -24,7 +24,7 @@ mysqldump vk > vk.sql
 **Задача 3** - (по желанию) Проанализировать структуру БД vk, которую мы создали на занятии, и внести предложения по усовершенствованию (если такие идеи есть). Напишите пожалуйста, всё-ли понятно по структуре.
 1. Фото пользователя в профиле. Добавляем столбец **photo** в таблицу **profiles** с id из таблицы **media**
 ```
-ALTER TABLE profiles ADD photo INT UNSIGNED FIRST;
+ALTER TABLE profiles ADD photo INT UNSIGNED AFTER id;
 ```
 2. Статус пользователя (active, blocked, deleted). Добавляем таблицу со статусами **user_statuses**. И столбец **status_id** в таблицу **users**.
 ```
