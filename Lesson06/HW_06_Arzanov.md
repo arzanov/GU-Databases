@@ -210,7 +210,7 @@ DESC profiles;
 
 SELECT 	user_id, 
         (SELECT CONCAT(first_name, ' ', last_name) FROM users WHERE users.id = profiles.user_id) AS Name,
-        (SELECT COUNT(id) FROM likes WHERE likes.target_id = profiles.user_id) AS Likes
+        (SELECT COUNT(id) FROM likes WHERE likes.target_id = profiles.user_id AND likes.target_type_id = 2) AS Likes
 	FROM profiles
 	ORDER BY birthday DESC
 	LIMIT 10;
