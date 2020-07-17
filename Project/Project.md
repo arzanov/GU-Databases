@@ -25,7 +25,7 @@
 **user_roles** - роли пользователей (администратор, менеджер, специалист и т.д.). Позволит распределить права доступа.  
 
 ## Создание таблиц
-Создадим базу данных и таблицы. Файл со скриптом создания [здесь](https://github.com/arzanov/GU-Databases/edit/master/Project/create_tables.sql)  
+Создадим базу данных и таблицы. Файл со скриптом создания [здесь](https://github.com/arzanov/GU-Databases/blob/master/Project/create_tables.sql)  
 ```sql
 CREATE DATABASE print_service;
 USE print_service;
@@ -185,7 +185,7 @@ CREATE TABLE user_roles(
 ```
 
 ## Создание внешних кючей
-Файл с внешними ключами [здесь](https://github.com/arzanov/GU-Databases/edit/master/Project/foreign_keys.sql)  
+Файл с внешними ключами [здесь](https://github.com/arzanov/GU-Databases/blob/master/Project/foreign_keys.sql)  
 ```sql
 -- Устанавливаем внешние ключи на таблицу devices
 
@@ -295,9 +295,9 @@ ALTER TABLE works
   	ON DELETE SET NULL;
 ```
 ## ERDiagram  
-![ERDiadram](https://github.com/arzanov/GU-Databases/edit/master/Project/project_erd.png)  
+![ERDiadram](https://github.com/arzanov/GU-Databases/blob/master/Project/project_erd.png)  
 ## Индексы
-![Indexes](https://github.com/arzanov/GU-Databases/edit/master/Project/project_indexes.png)  
+![Indexes](https://github.com/arzanov/GU-Databases/blob/master/Project/project_indexes.png)  
 В дополнение к индексам, построенным СУБД автоматически, на данном этапе имеет смысл создать ещё сдедующие:  
 ```sql
 -- Индекс по названиям устройств. Уменьшит нагрузку и ускорит вывод при поиске по названию.
