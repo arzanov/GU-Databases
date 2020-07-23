@@ -306,6 +306,89 @@ CREATE INDEX devices_name_idx ON devices (name);
 -- Составной индекс локаций по городам и адресам. 
 CREATE INDEX locations_city_id_address_idx ON locations (city_id, address);
 ```
+## Наполнение таблиц тестовыми данными  
+Справочные таблицы заполним вручную, а объемные таблицы (devices и counters) имеет смысл заполнить с помощь импорта данных из csv-файлов.
+Показания счётчиков импортируем дважды, чтобы иметь возможность протестировать запросы по аналитике объемов печати.
+```sql
+INSERT INTO device_types(name)
+	VALUES
+		('printer'),
+		('mfp');
+
+INSERT INTO vendors(name)
+	VALUES
+		('HP'),
+		('Brother'),
+		('Xerox'),
+		('Kyocera'),
+		('Ricoh'),
+		('Lexmark');
+
+INSERT INTO clients(name)
+	VALUES 
+		('Сбербанк'),
+		('Альфа-Банк'),
+		('Росгосстрах'),
+		('Ренессанс Страхование');
+	
+INSERT INTO cities(name)
+	VALUES 
+		('Москва'),
+		('Санкт-Петербург'),
+		('Нижний Новгород');
+	
+INSERT INTO locations(name, client_id, city_id, address, phone)
+	VALUES 
+		('Офис на Мясницкой', 1, 1, 'ул. Мясницкая, 17стр1', '(123) 456-78-90'),
+		('Офис на Невском', 1, 2, 'пр-кт Невский, д. 168', '(123) 456-78-90'),
+		('Офис на Максима Горького', 1, 3, 'ул. Максима Горького, д. 117', '(123) 456-78-90'),
+		('Офис на Большой Ордынке', 2, 1, 'ул. Большая Ордынка, 49, стр.1', '(123) 456-78-90'),
+		('Офис на Казанской', 2, 2, 'ул. Казанская, д. 2, лит. А', '(123) 456-78-90'),
+		('Офис на Сущевке', 3, 1, 'Сущёвский Вал ул, д. 67', '(123) 456-78-90'),
+		('Офис на Велозаводской', 3, 1, 'Велозаводская ул, д. 11/1', '(123) 456-78-90'),
+		('Офис на Стачек', 3, 2, 'Стачек пр-кт, д. 17', '(123) 456-78-90'),
+		('Офис на Лиговском', 3, 2, 'Лиговский пр-кт, д. 119', '(123) 456-78-90'),
+		('Офис на Дербеневской', 4, 1, 'Дербеневская наб., 7 строение 22', '(123) 456-78-90');
+
+INSERT INTO device_statuses(name)
+	VALUES
+		('active'),
+		('repairing'),
+		('off_service');
+
+INSERT INTO user_roles(name)
+	VALUES
+		('administrator'),
+		('manager'),
+		('specialist');
+	
+INSERT INTO users(name, role_id)
+	VALUES
+		('Иван Петров', 1);
+
+LOAD DATA INFILE '/Users/artur/Documents/devices_import.csv' 
+INTO TABLE devices 
+FIELDS TERMINATED BY ';' ENCLOSED BY '"' ESCAPED BY '\\'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(s_n, name, type_id, vendor_id, client_id, location_id, status_id, user_id, counter);
+
+
+LOAD DATA INFILE '/Users/artur/Documents/counters_import.csv' 
+INTO TABLE counters 
+FIELDS TERMINATED BY ';' ENCLOSED BY '"' ESCAPED BY '\\'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(device_id, counter, user_id);
+
+LOAD DATA INFILE '/Users/artur/Documents/counters_import_2.csv' 
+INTO TABLE counters 
+FIELDS TERMINATED BY ';' ENCLOSED BY '"' ESCAPED BY '\\'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(device_id, counter, user_id);
+```
+
 ## Триггеры
 ```sql
 DELIMITER //
