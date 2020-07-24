@@ -505,7 +505,8 @@ GROUP BY location_id;
 SELECT DISTINCT cl_name,
   SUM(volume) OVER () AS total_copies,
   SUM(volume) OVER (PARTITION BY cl_id) AS copies_by_client,
-  ROUND(SUM(volume) OVER (PARTITION BY cl_id) / SUM(volume) OVER () * 100, 2) AS '%%',   ROUND(AVG(volume) OVER (PARTITION BY cl_id)) AS avg_cop_by_office,
+  ROUND(SUM(volume) OVER (PARTITION BY cl_id) / SUM(volume) OVER () * 100, 2) AS '%%',   
+  ROUND(AVG(volume) OVER (PARTITION BY cl_id)) AS avg_cop_by_office,
   FIRST_VALUE(loc_name) OVER (PARTITION BY cl_id ORDER BY volume DESC) AS top_office,
   FIRST_VALUE(loc_name) OVER (PARTITION BY cl_id ORDER BY volume) AS last_office
 FROM print_volumes;
