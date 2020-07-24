@@ -511,3 +511,5 @@ SELECT DISTINCT cl_name,
   FIRST_VALUE(loc_name) OVER (PARTITION BY cl_id ORDER BY volume) AS last_office
 FROM print_volumes;
 ```
+
+Дамп базы данных [print_service.sql](https://github.com/arzanov/GU-Databases/blob/master/Project/print_service.sql)
