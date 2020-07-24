@@ -445,7 +445,11 @@ CREATE OR REPLACE VIEW device_info AS
 -- Представление, которое понадобится для построения аналилики печати по клиентам
 CREATE OR REPLACE VIEW print_volumes AS 
   SELECT devices.id AS dev_id, 
-    devices.counter - (SELECT counter FROM counters WHERE device_id = devices.id ORDER BY id DESC LIMIT 1 OFFSET 1)  AS volume, 
+    devices.counter - (SELECT counter 
+                       FROM counters 
+		       WHERE device_id = devices.id 
+		       ORDER BY id DESC LIMIT 1 OFFSET 1)  
+    AS volume COMMENT 'Напечатано страниц за отчетный период', 
     clients.id AS cl_id, 
     clients.name AS cl_name, 
     locations.id AS loc_id, 
