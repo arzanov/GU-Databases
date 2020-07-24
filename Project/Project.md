@@ -426,3 +426,84 @@ END//
 
 DELIMITER ;
 ```
+
+## Представления
+```sql
+-- Представление, которое выводит информацию по устройству в удобочитаемом виде
+
+CREATE OR REPLACE VIEW device_info AS
+  SELECT id,
+         s_n,
+         (SELECT name FROM vendors WHERE id = devices.vendor_id) AS vendor,
+         name,
+         counter,
+         (SELECT name FROM clients WHERE id = devices.client_id) AS client,
+         (SELECT name FROM locations WHERE id = devices.location_id) AS location,
+         (SELECT address FROM locations WHERE id = devices.location_id) AS address 
+  FROM devices;
+
+-- Представление, которое понадобится для построения аналилики печати по клиентам
+
+CREATE OR REPLACE VIEW print_volumes AS 
+  SELECT devices.id AS dev_id, 
+	     devices.counter - (SELECT counter FROM counters WHERE device_id = devices.id ORDER BY id DESC LIMIT 1 OFFSET 1)  AS volume, 
+	     clients.id AS cl_id, 
+	     clients.name AS cl_name, 
+	     locations.id AS loc_id, 
+	     locations.name AS loc_name  
+  FROM devices
+  JOIN clients ON clients.id = devices.client_id 
+  JOIN locations ON locations.id = devices.location_id;
+```
+
+## Типовые запросы
+```sql
+-- Вывести текущие показания счётчиков всех устройств московских офисов Сбербанка (через JOIN)
+
+SELECT d.id, d.s_n, d.name, d.counter, l.name AS office
+FROM devices d
+JOIN clients cl ON cl.id = d.client_id
+JOIN locations l ON l.id = d.location_id
+JOIN cities ct ON ct.id = l.city_id 
+WHERE cl.name LIKE 'Сбербанк' AND ct.name LIKE 'Москва'
+ORDER BY l.name;
+
+-- Вывести список устройств Сбербанка, находящиеся на ремонте (вложенные запросы)
+
+SELECT id, 
+       s_n, 
+       name, 
+       (SELECT name FROM cities WHERE cities.id = (SELECT city_id FROM locations WHERE id = devices.location_id)) AS city, 
+       (SELECT name FROM locations WHERE id = devices.location_id) AS office 
+FROM devices
+WHERE client_id = (SELECT id FROM clients WHERE name LIKE 'Сбербанк') 
+	AND status_id = (SELECT id FROM device_statuses WHERE name = 'repairing')
+ORDER BY location_id;
+
+-- Посчитать количество устройств Альфа-Банка, находящихся на обслуживании компании по локациям (вложенные запросы, группировка)
+
+SELECT (SELECT address FROM locations WHERE id = devices.location_id) AS office, 
+	   COUNT(1) AS devices_qty
+FROM devices 
+WHERE status_id != (SELECT id FROM device_statuses WHERE name = 'off_service')
+	AND client_id = (SELECT id FROM clients WHERE name LIKE 'Альфа-Банк')
+GROUP BY location_id;
+
+-- Посчитать аналитику по печати за отчетный период по клиентам (оконные функции)
+-- - общий объем печати
+-- - объем печати каждого клиента в кол-ве копий
+-- - объем печати каждого клиента в % от общего объема
+-- - среднее значение копий по офисам
+-- - офис, который печатает больше всех
+-- - офис, который печатает меньше всех
+
+-- Воспользуемся созданным ранее представлением print_volumes
+SELECT DISTINCT cl_name,
+	   SUM(volume) OVER () AS total_copies,
+	   SUM(volume) OVER (PARTITION BY cl_id) AS copies_by_client,
+	   ROUND(SUM(volume) OVER (PARTITION BY cl_id) / SUM(volume) OVER () * 100, 2) AS '%%',
+	   ROUND(AVG(volume) OVER (PARTITION BY cl_id)) AS avg_cop_by_office,
+	   FIRST_VALUE(loc_name) OVER (PARTITION BY cl_id ORDER BY volume DESC) AS top_office,
+	   FIRST_VALUE(loc_name) OVER (PARTITION BY cl_id ORDER BY volume) AS last_office
+FROM print_volumes;
+```
