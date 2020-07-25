@@ -3,13 +3,16 @@
 CREATE OR REPLACE VIEW device_info AS
   SELECT id,
          s_n,
-         (SELECT name FROM vendors WHERE id = devices.vendor_id) AS vendor,
+         vendor.name AS vendor,
          name,
          counter,
-         (SELECT name FROM clients WHERE id = devices.client_id) AS client,
-         (SELECT name FROM locations WHERE id = devices.location_id) AS location,
-         (SELECT address FROM locations WHERE id = devices.location_id) AS address 
-  FROM devices;
+         clients.name AS client,
+         locations.name AS location,
+         locations.address AS address 
+  FROM devices
+  JOIN vendors ON devices.vendor_id = vendors.id
+  JOIN clients ON devices.client_id = clients.id
+  JOIN locations ON devices.location_id = locations.id;
 
 -- Представление, которое понадобится для построения аналилики печати по клиентам
 
