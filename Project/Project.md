@@ -474,15 +474,17 @@ WHERE cl.name LIKE 'Сбербанк' AND ct.name LIKE 'Москва'
 ORDER BY l.name;
 
 
--- Вывести список устройств Сбербанка, находящиеся на ремонте (вложенные запросы)
-SELECT id, 
+-- Вывести список устройств Сбербанка, находящиеся на ремонте (JOIN и вложенные запросы)
+SELECT devices.id, 
        s_n, 
-       name, 
-       (SELECT name FROM cities WHERE cities.id = (SELECT city_id FROM locations WHERE id = devices.location_id)) AS city, 
-       (SELECT name FROM locations WHERE id = devices.location_id) AS office 
+       devices.name, 
+       cities.name AS city, 
+       locations.name AS office 
 FROM devices
-WHERE client_id = (SELECT id FROM clients WHERE name LIKE 'Сбербанк') 
-  AND status_id = (SELECT id FROM device_statuses WHERE name = 'repairing')
+JOIN locations ON devices.location_id = locations.id
+JOIN cities ON locations.city_id = cities.id 
+WHERE devices.client_id = (SELECT id FROM clients WHERE name LIKE 'Сбербанк') 
+	AND status_id = (SELECT id FROM device_statuses WHERE name = 'repairing')
 ORDER BY location_id;
 
 
