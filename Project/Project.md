@@ -431,10 +431,10 @@ DELIMITER ;
 ```sql
 -- Представление, которое выводит информацию по устройству в удобочитаемом виде
 CREATE OR REPLACE VIEW device_info AS
-  SELECT id,
+  SELECT devices.id AS id,
          s_n,
-         vendor.name AS vendor,
-         name,
+         vendors.name AS vendor,
+         devices.name AS name,
          counter,
          clients.name AS client,
          locations.name AS location,
